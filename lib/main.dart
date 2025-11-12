@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 void main() {
   runApp(const KeyFinderApp());
@@ -66,32 +65,49 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text("KeyFinder", style: TextStyle(fontSize: 32, color: Colors.white)),
+              const Text("KeyFinder",
+                  style: TextStyle(fontSize: 32, color: Colors.white)),
               const SizedBox(height: 40),
-              Icon(Icons.mic, size: 100, color: isListening ? Colors.tealAccent : Colors.white24),
+              Icon(Icons.mic,
+                  size: 100,
+                  color: isListening ? Colors.tealAccent : Colors.white24),
               const SizedBox(height: 20),
               if (isListening)
                 Column(
                   children: [
-                    Text(detectedNote, style: const TextStyle(fontSize: 64, fontWeight: FontWeight.bold, color: Colors.white)),
+                    Text(detectedNote,
+                        style: const TextStyle(
+                            fontSize: 64,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white)),
                     const SizedBox(height: 8),
-                    const Text("Likely Key:", style: TextStyle(color: Colors.white70)),
-                    Text(detectedKey, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.tealAccent)),
+                    const Text("Likely Key:",
+                        style: TextStyle(color: Colors.white70)),
+                    Text(detectedKey,
+                        style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.tealAccent)),
                     const SizedBox(height: 12),
-                    Text("Confidence: ${95}%", style: const TextStyle(color: Colors.white54)),
+                    Text("Confidence: ${95}%",
+                        style: const TextStyle(color: Colors.white54)),
                     const SizedBox(height: 20),
                   ],
                 ),
               ElevatedButton(
                 onPressed: toggleListening,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isListening ? Colors.redAccent : Colors.tealAccent,
+                  backgroundColor:
+                      isListening ? Colors.redAccent : Colors.tealAccent,
                   foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
                 child: Text(isListening ? "Stop Listening" : "Start Listening",
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
