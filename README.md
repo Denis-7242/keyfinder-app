@@ -1,3 +1,3 @@
-# keyfinder_mvp
+# keyfinder-app
 
 A new Flutter project.
