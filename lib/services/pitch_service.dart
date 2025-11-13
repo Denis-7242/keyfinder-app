@@ -3,25 +3,24 @@ import 'package:pitch_detector_dart/pitch_detector.dart';
 import '../utilities/frequency_to_note.dart';
 
 class PitchService {
-  final PitchDetector _pitchDetector = PitchDetector(44100, 2048);
-  
+  final PitchDetector _pitchDetector = PitchDetector(
+    audioSampleRate: 44100,
+    bufferSize: 2048,
+  );
+
   /// Analyze audio buffer and return detected pitch
   Future<PitchResult?> detectPitch(Uint8List audioData) async {
     try {
-      // Convert Uint8List to List<double>
-      List<double> audioBuffer = _convertToDoubleList(audioData);
+      // Convert Uint8List to List<double> if you choose float route,
+      // but since we have Int buffer feed, we can use Int method directly.
       
-      if (audioBuffer.length < 2048) {
-        return null;
-      }
+      // Use PCM16 Int buffer method
+      final result = await _pitchDetector.getPitchFromIntBuffer(audioData);
 
-      // Detect pitch
-      final result = _pitchDetector.getPitch(audioBuffer);
-      
       if (result.pitched && result.pitch > 0) {
         String note = FrequencyToNote.frequencyToNote(result.pitch);
         double cents = FrequencyToNote.getCentsDeviation(result.pitch);
-        
+
         return PitchResult(
           frequency: result.pitch,
           note: note,
@@ -29,30 +28,12 @@ class PitchService {
           confidence: result.probability,
         );
       }
-      
+
       return null;
     } catch (e) {
       print('Error detecting pitch: $e');
       return null;
     }
-  }
-
-  /// Convert audio bytes to double list for pitch detection
-  List<double> _convertToDoubleList(Uint8List audioData) {
-    List<double> result = [];
-    
-    // Convert PCM16 bytes to double samples (-1.0 to 1.0)
-    for (int i = 0; i < audioData.length - 1; i += 2) {
-      int sample = audioData[i] | (audioData[i + 1] << 8);
-      // Convert to signed
-      if (sample > 32767) {
-        sample = sample - 65536;
-      }
-      // Normalize to -1.0 to 1.0
-      result.add(sample / 32768.0);
-    }
-    
-    return result;
   }
 }
 
