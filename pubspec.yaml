@@ -1,24 +1,37 @@
-name: keyfinder_mvp
-description: A Flutter MVP app that helps musicians detect the musical key of a voice or instrument.
+name: keyfinder
+description: Real-time music key detection app for musicians
 publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  flutter_audio_capture: 1.1.11
-  pitch_detector_dart: ^0.0.7
-  flutter_animate: ^4.5.0
-  provider: ^6.1.0
+  
+  # Audio recording
+  record: ^5.0.4
+  
+  # Pitch detection
+  pitch_detector_dart: ^1.0.5
+  
+  # State management
+  provider: ^6.1.1
+  
+  # Local storage
+  shared_preferences: ^2.2.2
+  
+  # Permissions
+  permission_handler: ^11.1.0
+  
+  # Date formatting
+  intl: ^0.18.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_lints: ^3.0.0
 
 flutter:
   uses-material-design: true
-  assets:
-    - assets/icons/
