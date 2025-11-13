@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:record/record.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -67,4 +68,3 @@ class AudioService {
 }
 
 // Uint8List for audio data
-import 'dart:typed_data';
