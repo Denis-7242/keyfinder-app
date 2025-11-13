@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../models/note_model.dart';
-import '../utils/note_to_key.dart';
+import '../utilities/note_to_key.dart';
 
 class KeyDetectionService {
   final List<NoteModel> _detectedNotes = [];

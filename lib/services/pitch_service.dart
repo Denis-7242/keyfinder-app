@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:pitch_detector_dart/pitch_detector.dart';
-import '../utils/frequency_to_note.dart';
+import '../utilities/frequency_to_note.dart';
 
 class PitchService {
   final PitchDetector _pitchDetector = PitchDetector(44100, 2048);
