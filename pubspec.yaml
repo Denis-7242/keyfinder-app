@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   
-  # Audio recording
+  # Audio recording (Android/iOS only)
   record: ^5.0.4
   
   # Pitch detection

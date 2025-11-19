@@ -50,7 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _startListening() async {
     final success = await _audioService.startRecording((audioData) async {
-      // Process audio data
       final pitchResult = await _pitchService.detectPitch(audioData);
       
       if (pitchResult != null && mounted) {
@@ -68,11 +67,8 @@ class _HomeScreenState extends State<HomeScreen> {
         _isListening = true;
       });
 
-      // Update UI periodically
       _processingTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
-        if (mounted) {
-          setState(() {});
-        }
+        if (mounted) setState(() {});
       });
     } else {
       _showPermissionDialog();
@@ -131,56 +127,70 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Spacer(),
-            
-            // Key Display Card
-            KeyDisplay(
-              currentKey: _keyDetectionService.currentKey,
-              currentNote: _currentNote,
-              frequency: _currentFrequency,
-            ),
-            
-            const SizedBox(height: 32),
-            
-            // Frequency Meter
-            FrequencyMeter(
-              frequency: _currentFrequency,
-              isActive: _isListening,
-            ),
-            
-            const SizedBox(height: 48),
-            
-            // Microphone Button
-            MicButton(
-              isListening: _isListening,
-              onPressed: _toggleListening,
-            ),
-            
-            const SizedBox(height: 16),
-            
-            // Status Text
-            Text(
-              _isListening ? 'Tap to stop' : 'Tap to start listening',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            
-            const Spacer(),
-            
-            // Notes collected indicator
-            if (_isListening && _keyDetectionService.detectedNotes.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  '${_keyDetectionService.detectedNotes.length} notes collected',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight,
+                ),
+                child: IntrinsicHeight(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 16),
+
+                      // Key Display Card
+                      KeyDisplay(
+                        currentKey: _keyDetectionService.currentKey,
+                        currentNote: _currentNote,
+                        frequency: _currentFrequency,
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      // Frequency Meter
+                      FrequencyMeter(
+                        frequency: _currentFrequency,
+                        isActive: _isListening,
+                      ),
+
+                      const SizedBox(height: 48),
+
+                      // Microphone Button
+                      MicButton(
+                        isListening: _isListening,
+                        onPressed: _toggleListening,
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Status Text
+                      Text(
+                        _isListening ? 'Tap to stop' : 'Tap to start listening',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+
+                      const Spacer(),
+
+                      // Notes collected indicator
+                      if (_isListening && _keyDetectionService.detectedNotes.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Text(
+                            '${_keyDetectionService.detectedNotes.length} notes collected',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ),
-          ],
+            );
+          },
         ),
       ),
     );
