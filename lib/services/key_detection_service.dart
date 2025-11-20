@@ -19,9 +19,9 @@ class KeyDetectionService {
   List<KeyResult> get history => _history;
   List<NoteModel> get detectedNotes => _detectedNotes;
 
-  /// Add a detected note to the buffer
-  void addNote(String note, double frequency) {
-    if (note == 'N/A') return;
+  /// Add a detected note to the buffer. Returns true if the displayed key updated.
+  bool addNote(String note, double frequency) {
+    if (note == 'N/A') return false;
     
     _detectedNotes.add(NoteModel(
       note: note,
@@ -35,14 +35,15 @@ class KeyDetectionService {
     }
 
     // Update key detection
-    _updateKeyDetection();
+    return _updateKeyDetection();
   }
 
   /// Analyze collected notes and determine the key
-  void _updateKeyDetection() {
+  bool _updateKeyDetection() {
     if (_detectedNotes.length < _minNotesForKey) {
+      final changed = _currentKey != 'Collecting notes...';
       _currentKey = 'Collecting notes...';
-      return;
+      return changed;
     }
 
     // Get unique notes from recent detections
@@ -62,9 +63,14 @@ class KeyDetectionService {
         timestamp: DateTime.now(),
         confidence: _calculateConfidence(notes, detectedKey),
       ));
+      return true;
     } else if (detectedKey == 'Unknown') {
+      final changed = _currentKey != 'Uncertain';
       _currentKey = 'Uncertain';
+      return changed;
     }
+
+    return false;
   }
 
   /// Calculate confidence score

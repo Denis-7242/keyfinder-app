@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
 import '../services/audio_service.dart';
-import '../services/pitch_service.dart';
 import '../services/key_detection_service.dart';
-import '../widgets/mic_button.dart';
-import '../widgets/key_display.dart';
+import '../services/pitch_service.dart';
 import '../widgets/frequency_meter.dart';
+import '../widgets/key_display.dart';
+import '../widgets/mic_button.dart';
 import 'history_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -51,14 +52,20 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _startListening() async {
     final success = await _audioService.startRecording((audioData) async {
       final pitchResult = await _pitchService.detectPitch(audioData);
-      
+
       if (pitchResult != null && mounted) {
+        final keyChanged = _keyDetectionService.addNote(
+          pitchResult.note,
+          pitchResult.frequency,
+        );
+
         setState(() {
           _currentNote = pitchResult.note;
           _currentFrequency = pitchResult.frequency;
+          if (keyChanged) {
+            // Trigger rebuild so the UI reflects the new key immediately.
+          }
         });
-        
-        _keyDetectionService.addNote(pitchResult.note, pitchResult.frequency);
       }
     });
 
@@ -107,92 +114,266 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text('KeyFinder'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.history),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => HistoryScreen(
-                    keyDetectionService: _keyDetectionService,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF070A1D), Color(0xFF11173B), Color(0xFF1B2351)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.4),
+                      foregroundColor: theme.colorScheme.onSurface,
+                    ),
+                    icon: const Icon(Icons.history),
+                    label: const Text('History'),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HistoryScreen(
+                            keyDetectionService: _keyDetectionService,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
-              );
-            },
+                const SizedBox(height: 12),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 8),
+                        KeyDisplay(
+                          currentKey: _keyDetectionService.currentKey,
+                          currentNote: _currentNote,
+                          frequency: _currentFrequency,
+                        ),
+                        const SizedBox(height: 20),
+                        _StatusChips(
+                          isListening: _isListening,
+                          noteCount: _keyDetectionService.detectedNotes.length,
+                        ),
+                        const SizedBox(height: 20),
+                        _MeterCard(
+                          isListening: _isListening,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                'Live Frequency',
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              FrequencyMeter(
+                                frequency: _currentFrequency,
+                                isActive: _isListening,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                '${_currentFrequency.toStringAsFixed(1)} Hz',
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  color: theme.colorScheme.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 28),
+                        _MeterCard(
+                          isListening: _isListening,
+                          child: Column(
+                            children: [
+                              Text(
+                                _isListening ? 'Tap to stop listening' : 'Tap to start listening',
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              MicButton(
+                                isListening: _isListening,
+                                onPressed: _toggleListening,
+                              ),
+                              if (_isListening && _keyDetectionService.detectedNotes.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 16),
+                                  child: Text(
+                                    '${_keyDetectionService.detectedNotes.length} notes captured',
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusChips extends StatelessWidget {
+  final bool isListening;
+  final int noteCount;
+
+  const _StatusChips({
+    required this.isListening,
+    required this.noteCount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _StatusTile(
+            label: isListening ? 'Status' : 'Ready',
+            value: isListening ? 'Listening' : 'Idle',
+            icon: isListening ? Icons.graphic_eq : Icons.pause_circle,
+            accent: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _StatusTile(
+            label: 'Samples',
+            value: '$noteCount notes',
+            icon: Icons.music_note,
+            accent: Theme.of(context).colorScheme.secondary,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _StatusTile extends StatelessWidget {
+  final String label;
+  final String value;
+  final IconData icon;
+  final Color accent;
+
+  const _StatusTile({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.accent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        color: theme.colorScheme.surface.withValues(alpha: 0.35),
+        border: Border.all(color: accent.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: accent.withValues(alpha: 0.25),
+            ),
+            padding: const EdgeInsets.all(8),
+            child: Icon(icon, color: accent),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label.toUpperCase(),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    letterSpacing: 1.1,
+                    color: theme.textTheme.bodyMedium?.color,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight,
-                ),
-                child: IntrinsicHeight(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 16),
+    );
+  }
+}
 
-                      // Key Display Card
-                      KeyDisplay(
-                        currentKey: _keyDetectionService.currentKey,
-                        currentNote: _currentNote,
-                        frequency: _currentFrequency,
-                      ),
+class _MeterCard extends StatelessWidget {
+  final bool isListening;
+  final Widget child;
 
-                      const SizedBox(height: 32),
+  const _MeterCard({
+    required this.isListening,
+    required this.child,
+  });
 
-                      // Frequency Meter
-                      FrequencyMeter(
-                        frequency: _currentFrequency,
-                        isActive: _isListening,
-                      ),
-
-                      const SizedBox(height: 48),
-
-                      // Microphone Button
-                      MicButton(
-                        isListening: _isListening,
-                        onPressed: _toggleListening,
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Status Text
-                      Text(
-                        _isListening ? 'Tap to stop' : 'Tap to start listening',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-
-                      const Spacer(),
-
-                      // Notes collected indicator
-                      if (_isListening && _keyDetectionService.detectedNotes.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Text(
-                            '${_keyDetectionService.detectedNotes.length} notes collected',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        color: theme.colorScheme.surface.withValues(alpha: 0.35),
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: isListening ? 0.4 : 0.2),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.35),
+            blurRadius: 25,
+            offset: const Offset(0, 18),
+          ),
+        ],
       ),
+      child: child,
     );
   }
 }

@@ -14,58 +14,95 @@ class KeyDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Current Note
-            Text(
-              'Current Note',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              currentNote,
-              style: Theme.of(context).textTheme.displayLarge,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '${frequency.toStringAsFixed(1)} Hz',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            
-            const SizedBox(height: 32),
-            
-            // Divider
-            Container(
-              height: 1,
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-            ),
-            
-            const SizedBox(height: 32),
-            
-            // Detected Key
-            Text(
-              'Detected Key',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.secondary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              currentKey,
-              style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                color: Theme.of(context).colorScheme.secondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
+    final theme = Theme.of(context);
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 16),
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(32),
+        gradient: LinearGradient(
+          colors: [
+            theme.colorScheme.surface.withValues(alpha: 0.7),
+            theme.colorScheme.surface.withValues(alpha: 0.4),
           ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.35),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.4),
+            blurRadius: 30,
+            offset: const Offset(0, 20),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Current Note',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.primary,
+              letterSpacing: 0.6,
+            ),
+          ),
+          const SizedBox(height: 8),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: Text(
+              currentNote,
+              key: ValueKey(currentNote),
+              style: theme.textTheme.displayLarge?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: Text(
+              '${frequency.toStringAsFixed(1)} Hz',
+              key: ValueKey(frequency.toStringAsFixed(1)),
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.textTheme.bodyLarge?.color,
+              ),
+            ),
+          ),
+          const SizedBox(height: 32),
+          Opacity(
+            opacity: 0.4,
+            child: Divider(
+              thickness: 1,
+              color: theme.colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Detected Key',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.secondary,
+              letterSpacing: 0.6,
+            ),
+          ),
+          const SizedBox(height: 12),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: Text(
+              currentKey,
+              key: ValueKey(currentKey),
+              textAlign: TextAlign.center,
+              style: theme.textTheme.displayMedium?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
