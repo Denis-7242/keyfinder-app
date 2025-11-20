@@ -5,10 +5,10 @@ class MicButton extends StatefulWidget {
   final VoidCallback onPressed;
 
   const MicButton({
-    Key? key,
+    super.key,
     required this.isListening,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   State<MicButton> createState() => _MicButtonState();
@@ -67,8 +67,8 @@ class _MicButtonState extends State<MicButton> with SingleTickerProviderStateMix
                 boxShadow: [
                   BoxShadow(
                     color: widget.isListening
-                        ? Theme.of(context).colorScheme.primary.withOpacity(0.4)
-                        : Colors.black.withOpacity(0.2),
+                        ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.4)
+                        : Colors.black.withValues(alpha: 0.2),
                     blurRadius: 20,
                     spreadRadius: widget.isListening ? 5 : 0,
                   ),

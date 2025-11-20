@@ -1,6 +1,9 @@
 import 'dart:async';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../models/note_model.dart';
 import '../utilities/note_to_key.dart';
 
@@ -104,8 +107,9 @@ class KeyDetectionService {
           .map((r) => json.encode(r.toJson()))
           .toList();
       await prefs.setStringList('key_history', historyJson);
-    } catch (e) {
-      print('Error saving history: $e');
+    } catch (e, stackTrace) {
+      debugPrint('Error saving history: $e');
+      debugPrint(stackTrace.toString());
     }
   }
 
@@ -120,8 +124,9 @@ class KeyDetectionService {
             .map((str) => KeyResult.fromJson(json.decode(str)))
             .toList();
       }
-    } catch (e) {
-      print('Error loading history: $e');
+    } catch (e, stackTrace) {
+      debugPrint('Error loading history: $e');
+      debugPrint(stackTrace.toString());
     }
   }
 

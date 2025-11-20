@@ -17,7 +17,6 @@ class AppTheme {
       primary: accentTeal,
       secondary: accentPurple,
       surface: cardBackground,
-      background: darkBackground,
     ),
     
     textTheme: const TextTheme(
@@ -50,7 +49,7 @@ class AppTheme {
     cardTheme: CardThemeData(
       color: cardBackground,
       elevation: 4,
-      shadowColor: Colors.black.withOpacity(0.3),
+      shadowColor: Colors.black.withValues(alpha: 0.3),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),

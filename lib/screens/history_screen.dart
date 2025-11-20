@@ -7,9 +7,9 @@ class HistoryScreen extends StatefulWidget {
   final KeyDetectionService keyDetectionService;
 
   const HistoryScreen({
-    Key? key,
+    super.key,
     required this.keyDetectionService,
-  }) : super(key: key);
+  });
 
   @override
   State<HistoryScreen> createState() => _HistoryScreenState();
@@ -54,7 +54,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           Icon(
             Icons.music_note_outlined,
             size: 80,
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 16),
           Text(
@@ -99,7 +99,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+                    color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -126,10 +126,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+                    color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Text(
@@ -146,7 +146,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             Text(
               timeFormat.format(result.timestamp),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
               ),
             ),
           ],

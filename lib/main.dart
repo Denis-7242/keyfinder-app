@@ -26,7 +26,7 @@ void main() {
 }
 
 class KeyFinderApp extends StatelessWidget {
-  const KeyFinderApp({Key? key}) : super(key: key);
+  const KeyFinderApp({super.key});
 
   @override
   Widget build(BuildContext context) {

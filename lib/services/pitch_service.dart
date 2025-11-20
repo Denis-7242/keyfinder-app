@@ -1,5 +1,6 @@
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:pitch_detector_dart/pitch_detector.dart';
+
 import '../utilities/frequency_to_note.dart';
 
 class PitchService {
@@ -30,8 +31,9 @@ class PitchService {
       }
 
       return null;
-    } catch (e) {
-      print('Error detecting pitch: $e');
+    } catch (e, stackTrace) {
+      debugPrint('Error detecting pitch: $e');
+      debugPrint(stackTrace.toString());
       return null;
     }
   }

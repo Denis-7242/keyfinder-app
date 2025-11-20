@@ -6,11 +6,11 @@ class KeyDisplay extends StatelessWidget {
   final double frequency;
 
   const KeyDisplay({
-    Key? key,
+    super.key,
     required this.currentKey,
     required this.currentNote,
     required this.frequency,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class KeyDisplay extends StatelessWidget {
             // Divider
             Container(
               height: 1,
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
             ),
             
             const SizedBox(height: 32),

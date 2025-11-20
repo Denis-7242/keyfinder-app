@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 
 class FrequencyMeter extends StatelessWidget {
   final double frequency;
   final bool isActive;
 
   const FrequencyMeter({
-    Key? key,
+    super.key,
     required this.frequency,
     this.isActive = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +48,7 @@ class _FrequencyMeterPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // Background
     Paint bgPaint = Paint()
-      ..color = primaryColor.withOpacity(0.1)
+      ..color = primaryColor.withValues(alpha: 0.1)
       ..style = PaintingStyle.fill;
     
     RRect bgRect = RRect.fromRectAndRadius(
@@ -75,7 +74,7 @@ class _FrequencyMeterPainter extends CustomPainter {
 
     // Draw tick marks
     Paint tickPaint = Paint()
-      ..color = Colors.white.withOpacity(0.3)
+      ..color = Colors.white.withValues(alpha: 0.3)
       ..strokeWidth = 1;
     
     for (int i = 0; i <= 10; i++) {

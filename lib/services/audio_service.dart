@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:typed_data';
-import 'package:record/record.dart';
+import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:record/record.dart';
 
 class AudioService {
   final AudioRecorder _recorder = AudioRecorder();
@@ -41,8 +41,9 @@ class AudioService {
       _amplitudeSubscription = stream.listen(onData);
       _isRecording = true;
       return true;
-    } catch (e) {
-      print('Error starting recording: $e');
+    } catch (e, stackTrace) {
+      debugPrint('Error starting recording: $e');
+      debugPrint(stackTrace.toString());
       return false;
     }
   }
@@ -55,8 +56,9 @@ class AudioService {
       await _amplitudeSubscription?.cancel();
       await _recorder.stop();
       _isRecording = false;
-    } catch (e) {
-      print('Error stopping recording: $e');
+    } catch (e, stackTrace) {
+      debugPrint('Error stopping recording: $e');
+      debugPrint(stackTrace.toString());
     }
   }
 

@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
 import '../services/audio_service.dart';
 import '../services/pitch_service.dart';
 import '../services/key_detection_service.dart';
@@ -10,7 +10,7 @@ import '../widgets/frequency_meter.dart';
 import 'history_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
