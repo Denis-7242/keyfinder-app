@@ -16,9 +16,29 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
+  late final KeyDetectionService _service = widget.keyDetectionService;
+
+  @override
+  void initState() {
+    super.initState();
+    _service.addListener(_onHistoryChanged);
+  }
+
+  void _onHistoryChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void dispose() {
+    _service.removeListener(_onHistoryChanged);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final history = widget.keyDetectionService.history;
+    final history = _service.history;
 
     return Scaffold(
       appBar: AppBar(
@@ -168,9 +188,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ),
           TextButton(
             onPressed: () {
-              widget.keyDetectionService.clearHistory();
+              _service.clearHistory();
               Navigator.pop(context);
-              setState(() {});
             },
             child: Text(
               'Clear',
@@ -182,6 +201,3 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 }
-
-// Add intl package for date formatting
-// In pubspec.yaml add: intl: ^0.18.1

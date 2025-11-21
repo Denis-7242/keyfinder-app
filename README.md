@@ -1,202 +1,139 @@
-# 🎵 KeyFinder - Real-Time Music Key Detection App
+# 🎵 KeyFinder – Real-Time Key & Pitch Companion
 
-A Flutter application that helps musicians and singers find the key of any song, voice, or instrument sound in real-time.
+KeyFinder is a Flutter app that helps singers and instrumentalists stay on pitch, visualize live notes, and capture the musical key of what they are playing. The latest release introduces a multi-screen experience with a modern navigation bar so each workflow stays focused and clutter‑free.
 
-## ✨ Features
+---
 
-- **Real-time Audio Input**: Continuous microphone capture and analysis
-- **Pitch Detection**: Accurate frequency detection using advanced algorithms
-- **Note Conversion**: Converts Hz to musical notes (A, A#, B, etc.)
-- **Key Estimation**: Determines the most probable musical key (e.g., C Major, F# Minor)
-- **Visual Feedback**: Clean, dark UI with animated displays
-- **History Tracking**: Saves detected keys for later review
-- **Confidence Score**: Shows reliability of key detection
+## ✨ Highlights
 
-## 🎨 Design
+- **Detect tab** – immersive live tuner with animated note + frequency cards
+- **History tab** – scrollable timeline of captured keys, notes, and confidence
+- **Insights tab** – high-level stats (top keys, frequent notes, averages) pulled from history
+- **Settings tab** – quick controls for saving, privacy, and app info
+- **Navigation bar** – Material 3 `NavigationBar` with labeled destinations + custom styling
+- **ChangeNotifier-powered service** – one shared `KeyDetectionService` keeps all tabs in sync
+- **Polished dark theme** – gradients, cards, and soft glows for a stage-ready look
 
-- Dark navy background with soft teal/purple accents
-- Smooth animations and transitions
-- Minimal, music-inspired interface
-- Responsive layout for all screen sizes
+---
 
-## 📱 Setup Instructions
+## 🗺️ Navigation Map
 
-### Prerequisites
+| Tab | Purpose | Key Widgets |
+| --- | --- | --- |
+| **Detect** | Real-time tuner + microphone control | `HomeScreen`, `KeyDisplay`, `FrequencyMeter`, `MicButton` |
+| **History** | Review past detections, clear/restore log | `HistoryScreen`, `KeyResult` cards |
+| **Insights** | Visualize trends, top keys/notes, averages | `InsightsScreen`, `_SummaryHeader`, `_InsightsCard` |
+| **Settings** | Toggle behavior & manage data | `SettingsScreen`, switch tiles, info cards |
 
-- Flutter SDK (3.0.0 or higher)
-- Android Studio / Xcode
-- A physical device (recommended for microphone testing)
+The tabs sit in an `IndexedStack`, so state is preserved when you switch back and forth.
+
+---
+
+## 📱 Getting Started
+
+### Requirements
+
+- Flutter 3.10+ (SDK constraint `>=3.0.0 <4.0.0`)
+- Android Studio or VS Code
+- Real device strongly recommended (microphone access)
 
 ### Installation
 
-1. **Clone or create the project**
-   ```bash
-   flutter create keyfinder
-   cd keyfinder
-   ```
+```bash
+git clone <repo-url> keyfinder_mvp
+cd keyfinder_mvp
+flutter pub get
+flutter run
+```
 
-2. **Replace the files** with the provided code:
-   - `pubspec.yaml`
-   - `lib/main.dart`
-   - All files in the folder structure
+### Permissions
 
-3. **Install dependencies**
-   ```bash
-   flutter pub get
-   ```
+- **Android** – ensure `android.permission.RECORD_AUDIO` is present (already configured)
+- **iOS** – add an `NSMicrophoneUsageDescription` entry in `ios/Runner/Info.plist`
 
-4. **Configure permissions**
-
-   **For Android** - Add to `android/app/src/main/AndroidManifest.xml`:
-   ```xml
-   <manifest>
-       <uses-permission android:name="android.permission.RECORD_AUDIO" />
-       <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-       
-       <application>
-           ...
-       </application>
-   </manifest>
-   ```
-
-   **For iOS** - Add to `ios/Runner/Info.plist`:
-   ```xml
-   <key>NSMicrophoneUsageDescription</key>
-   <string>This app needs microphone access to detect musical keys</string>
-   ```
-
-5. **Run the app**
-   ```bash
-   flutter run
-   ```
+---
 
 ## 🏗️ Project Structure
 
 ```
 lib/
-├── main.dart                           # App entry point
+├── main.dart                  # App shell + navigation bar
 ├── screens/
-│   ├── home_screen.dart               # Main detection screen
-│   └── history_screen.dart            # Detection history
+│   ├── home_screen.dart       # Live detection (Detect tab)
+│   ├── history_screen.dart    # Timeline of detections
+│   ├── insights_screen.dart   # Aggregated stats & trends
+│   └── settings_screen.dart   # Preferences & data controls
 ├── widgets/
-│   ├── key_display.dart               # Shows note and key
-│   ├── mic_button.dart                # Animated mic button
-│   └── frequency_meter.dart           # Visual frequency indicator
+│   ├── key_display.dart       # Animated note/key card
+│   ├── frequency_meter.dart   # CustomPaint bar
+│   └── mic_button.dart        # Pulsing mic control
 ├── services/
-│   ├── audio_service.dart             # Microphone recording
-│   ├── pitch_service.dart             # Frequency detection
-│   └── key_detection_service.dart     # Key analysis
-├── utils/
-│   ├── frequency_to_note.dart         # Hz to note conversion
-│   └── note_to_key.dart               # Note to key mapping
+│   ├── audio_service.dart     # Microphone stream via `record`
+│   ├── pitch_service.dart     # Frequency analysis
+│   └── key_detection_service.dart # ChangeNotifier + history store
 ├── models/
-│   └── note_model.dart                # Data models
-└── theme/
-    └── app_theme.dart                 # App theming
+│   └── note_model.dart        # Note & key result models
+├── utilities/
+│   ├── frequency_to_note.dart # Hz → note helpers
+│   └── note_to_key.dart       # Key scoring logic
+└── themes/
+    └── app_theme.dart         # Dark Material 3 styling
 ```
-
-## 🎯 How It Works
-
-1. **Audio Capture**: The app uses the device microphone to record audio continuously
-2. **Pitch Detection**: Uses the `pitch_detector_dart` library to analyze audio frequency
-3. **Note Conversion**: Converts frequency (Hz) to musical notes using logarithmic calculations
-4. **Key Detection**: Collects notes over time and determines the most likely key using music theory algorithms
-5. **Visual Display**: Shows real-time results with smooth animations
-
-## 🔧 Technical Details
-
-### Key Detection Algorithm
-
-The app uses a scoring system to determine keys:
-- Collects the last 50 detected notes
-- Tests each note against all 24 possible keys (12 major + 12 minor)
-- Assigns scores based on how well notes fit each key's scale
-- Selects the key with the highest score
-
-### Pitch Detection
-
-- Sample rate: 44.1 kHz
-- Buffer size: 2048 samples
-- Uses autocorrelation for fundamental frequency detection
-- Filters out noise and unreliable detections
-
-## 📊 Dependencies
-
-- `flutter_sound`: Audio recording
-- `record`: Alternative audio recording package
-- `pitch_detector_dart`: Pitch/frequency detection
-- `provider`: State management (for future enhancements)
-- `shared_preferences`: Local data persistence
-- `permission_handler`: Runtime permissions
-- `intl`: Date formatting
-
-## 🚀 Usage
-
-1. Launch the app
-2. Tap the microphone button to start listening
-3. Play or sing notes/music
-4. Watch as the app detects notes and determines the key
-5. View detection history by tapping the history icon
-
-## 🎼 Supported Keys
-
-The app can detect all major and minor keys:
-- **Major keys**: C, C#, D, D#, E, F, F#, G, G#, A, A#, B
-- **Minor keys**: C, C#, D, D#, E, F, F#, G, G#, A, A#, B
-
-## ⚙️ Troubleshooting
-
-### No sound detected
-- Check microphone permissions
-- Ensure volume is adequate
-- Try speaking/playing louder
-
-### Inaccurate key detection
-- Let the app collect more notes (8+ minimum)
-- Play clear, sustained notes
-- Avoid background noise
-
-### Permission errors
-- Manually grant microphone permission in device settings
-- Restart the app after granting permission
-
-## 🔮 Future Enhancements
-
-- Settings page for sensitivity adjustment
-- Different tuning standards (A440 vs A432)
-- MIDI input support
-- Export history as CSV
-- Share results with friends
-- Chord detection
-- Scale suggestions
-
-## 📄 License
-
-This project is open source and available for educational purposes.
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to:
-- Report bugs
-- Suggest features
-- Submit pull requests
-
-## 👨‍💻 Developer Notes
-
-### Testing Tips
-
-1. Use a real device for best results (emulators have limited microphone support)
-2. Test with various instruments and voices
-3. Compare results with known musical pieces
-4. Try different volumes and distances from microphone
-
-### Performance Optimization
-
-- Audio processing runs on a separate thread
-- UI updates are throttled to 500ms intervals
-- Only the last 50 notes are kept in memory
-- History is limited to 20 entries
 
 ---
 
-Built with ❤️ by Denis using Flutter
+## ⚙️ How It Works
+
+1. **Recording** – `AudioService` (record package) streams PCM16 data after runtime permission approval.
+2. **Pitch detection** – `PitchService` runs `pitch_detector_dart` on the stream and returns the nearest note + cents offset.
+3. **Key inference** – `KeyDetectionService` buffers notes, scores every major/minor key, and emits the best match via `ChangeNotifier`.
+4. **History** – latest 20 `KeyResult`s are serialized into `SharedPreferences` for offline review.
+5. **UI updates** – the Detect tab rebuilds as soon as the service reports new keys; History/Settings listen to the same notifier for live counts.
+
+---
+
+## 📦 Dependencies
+
+- `record` – microphone capture + streaming
+- `pitch_detector_dart` – pitch analysis
+- `permission_handler` – runtime permissions
+- `shared_preferences` – local persistence
+- `intl` – friendly timestamps
+- `provider` (future) – optional global state enhancements
+
+---
+
+## 🚀 Usage Tips
+
+1. Open the **Detect** tab and tap the mic to start listening.
+2. Sing or play for at least 8 clear notes; watch the note card animate.
+3. Once enough data is collected, the detected key appears with glowing emphasis.
+4. Switch to the **History** tab to review keys, notes, and confidence.
+5. Use **Settings** to clear history or tweak how the app behaves.
+
+---
+
+## 🧠 Troubleshooting
+
+- **No key detected** – ensure the mic permission dialog was accepted and you’ve captured at least 8 distinct notes.
+- **No audio** – disconnect Bluetooth audio accessories or raise input volume.
+- **History not updating** – detections are limited to 20 entries; clear the list from Settings if it feels stale.
+
+---
+
+## 🔮 Roadmap Ideas
+
+- Manual sensitivity control for noisy environments
+- Alternate tuning standards (A432, A444)
+- Export / share history snapshots
+- Color themes for light mode and accessibility
+
+---
+
+## 🤝 Contributing
+
+Issues and pull requests are welcome! Please include device details and Flutter version when reporting pitch or permission problems.
+
+---
+
+Built with ❤️ using Flutter. Have fun singing in tune! 🎶

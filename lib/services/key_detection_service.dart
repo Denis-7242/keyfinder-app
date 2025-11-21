@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/note_model.dart';
 import '../utilities/note_to_key.dart';
 
-class KeyDetectionService {
+class KeyDetectionService extends ChangeNotifier {
   final List<NoteModel> _detectedNotes = [];
   final int _maxNotes = 50; // Keep last 50 notes for analysis
   final int _minNotesForKey = 8; // Minimum notes before detecting key
@@ -35,7 +35,11 @@ class KeyDetectionService {
     }
 
     // Update key detection
-    return _updateKeyDetection();
+    final changed = _updateKeyDetection();
+    if (changed) {
+      notifyListeners();
+    }
+    return changed;
   }
 
   /// Analyze collected notes and determine the key
@@ -97,12 +101,14 @@ class KeyDetectionService {
       _history.removeLast();
     }
     _saveHistory();
+    notifyListeners();
   }
 
   /// Clear all detected notes and reset
   void reset() {
     _detectedNotes.clear();
     _currentKey = 'Listening...';
+    notifyListeners();
   }
 
   /// Save history to local storage
@@ -134,6 +140,7 @@ class KeyDetectionService {
       debugPrint('Error loading history: $e');
       debugPrint(stackTrace.toString());
     }
+    notifyListeners();
   }
 
   /// Clear history
@@ -141,5 +148,6 @@ class KeyDetectionService {
     _history.clear();
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('key_history');
+    notifyListeners();
   }
 }

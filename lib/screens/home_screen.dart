@@ -8,10 +8,14 @@ import '../services/pitch_service.dart';
 import '../widgets/frequency_meter.dart';
 import '../widgets/key_display.dart';
 import '../widgets/mic_button.dart';
-import 'history_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final KeyDetectionService keyDetectionService;
+
+  const HomeScreen({
+    super.key,
+    required this.keyDetectionService,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -20,8 +24,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final AudioService _audioService = AudioService();
   final PitchService _pitchService = PitchService();
-  final KeyDetectionService _keyDetectionService = KeyDetectionService();
-  
+  late KeyDetectionService _keyDetectionService;
+
   bool _isListening = false;
   String _currentNote = '--';
   double _currentFrequency = 0.0;
@@ -30,7 +34,14 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _keyDetectionService.loadHistory();
+    _keyDetectionService = widget.keyDetectionService;
+    _keyDetectionService.addListener(_onServiceUpdate);
+  }
+
+  void _onServiceUpdate() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -38,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _stopListening();
     _audioService.dispose();
     _processingTimer?.cancel();
+    _keyDetectionService.removeListener(_onServiceUpdate);
     super.dispose();
   }
 
@@ -118,11 +130,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: const Text('KeyFinder'),
-      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -137,33 +144,19 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: FilledButton.icon(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.4),
-                      foregroundColor: theme.colorScheme.onSurface,
-                    ),
-                    icon: const Icon(Icons.history),
-                    label: const Text('History'),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HistoryScreen(
-                            keyDetectionService: _keyDetectionService,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
                 const SizedBox(height: 12),
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        const SizedBox(height: 8),
+                        Text(
+                          'Live Key Detector',
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
                         KeyDisplay(
                           currentKey: _keyDetectionService.currentKey,
                           currentNote: _currentNote,

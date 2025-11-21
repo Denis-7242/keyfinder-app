@@ -65,5 +65,20 @@ class AppTheme {
         color: textPrimary,
       ),
     ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: cardBackground.withValues(alpha: 0.9),
+      indicatorColor: accentTeal.withValues(alpha: 0.2),
+      elevation: 0,
+      height: 78,
+      labelTextStyle: WidgetStatePropertyAll(
+        TextStyle(
+          fontWeight: FontWeight.w600,
+          color: textPrimary.withValues(alpha: 0.9),
+        ),
+      ),
+      iconTheme: WidgetStatePropertyAll(
+        IconThemeData(color: textSecondary.withValues(alpha: 0.9)),
+      ),
+    ),
   );
 }
