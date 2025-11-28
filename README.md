@@ -40,7 +40,7 @@ The tabs sit in an `IndexedStack`, so state is preserved when you switch back an
 ### Installation
 
 ```bash
-git clone <repo-url> keyfinder_mvp
+git clone https://github.com/Denis-7242/keyfinder-app.git 
 cd keyfinder_mvp
 flutter pub get
 flutter run
@@ -136,4 +136,4 @@ Issues and pull requests are welcome! Please include device details and Flutter 
 
 ---
 
-Built with ❤️ using Flutter. Have fun singing in tune! 🎶
+Built with ❤️ by Denis using Flutter. Have fun singing in tune! 🎶
