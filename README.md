@@ -136,4 +136,4 @@ Issues and pull requests are welcome! Please include device details and Flutter 
 
 ---
 
-Built with ❤️ by Denis using Flutter. Have fun singing in tune! 🎶
+Built with ❤️ by Denis using Flutter.
