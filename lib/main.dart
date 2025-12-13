@@ -126,4 +126,6 @@ class _MainNavigationState extends State<MainNavigation> {
     );
   }
 }
-
+//end of main.dart
+// This file is part of the Key Detection App.
+// It initializes the app, sets up the main navigation, and manages the key detection service.
