@@ -201,3 +201,5 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 }
+//end of history screen.dart
+// This file is part of the Key Detection App.
