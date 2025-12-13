@@ -203,3 +203,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 }
 //end of history screen.dart
 // This file is part of the Key Detection App.
+// It provides the UI for displaying the history of detected keys and allows users to clear the history.
+// The history is displayed in a list format, with each entry showing the detected key, confidence level, notes, and timestamp.
+// The app uses the KeyDetectionService to manage the history data and updates the UI accordingly.
+// The history can be cleared through a confirmation dialog.
