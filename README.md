@@ -1,5 +1,6 @@
 # 🎵 KeyFinder – Real-Time Key & Pitch Companion
 
+KeyFinder is a Flutter app that helps singers and instrumentalists stay on pitch, visualize live notes, and capture the musical key of what they are playing. The latest release introduces a multi-screen experience with a modern navigation bar so each workflow stays focused and clutter‑free.
 
 ---
 
